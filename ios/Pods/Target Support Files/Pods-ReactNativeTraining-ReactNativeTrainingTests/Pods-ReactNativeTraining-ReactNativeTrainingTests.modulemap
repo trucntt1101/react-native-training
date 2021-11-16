@@ -1,0 +1,6 @@
+module Pods_ReactNativeTraining_ReactNativeTrainingTests {
+  umbrella header "Pods-ReactNativeTraining-ReactNativeTrainingTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
