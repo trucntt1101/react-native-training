@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomTextInput from '../components/CustomTextInput';
@@ -7,6 +7,9 @@ import CircleButton from '../components/CircleButton';
 import InlineTextButton from '../components/InlineTextButton';
 import Heading from '../components/Heading';
 import { useForm, Controller } from 'react-hook-form';
+import StringsOfLanguage from '../localization/StringsOfLanguage';
+
+const strings = StringsOfLanguage;
 
 function Login({ navigation }) {
   const {
@@ -14,11 +17,23 @@ function Login({ navigation }) {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm({ mode: 'onBlur' });
+  const [isEnabled, setIsEnabled] = useState(true);
+  const [reload, setReload] = useState(0);
 
+  const changeLanguage = (toggleValue) => {
+    if (!toggleValue) StringsOfLanguage.setLanguage('vi');
+    else StringsOfLanguage.setLanguage('en');
+
+    setReload((previousState) => previousState + 1);
+  };
   const onSubmit = (data) => console.log('LOGIN FORM', data);
   return (
-    <LinearGradient colors={['#228ee8', '#1465d0', '#0129ac']} style={styles.container}>
-      <Heading style={{ position: 'absolute', top: 50 }} />
+    <LinearGradient
+      colors={['#228ee8', '#1465d0', '#0129ac']}
+      style={styles.container}
+      reload={reload}
+    >
+      <Heading style={{ position: 'absolute', top: 55 }} changeLang={changeLanguage} />
       {/* LOGIN FORM */}
       <View>
         <Controller
@@ -26,7 +41,7 @@ function Login({ navigation }) {
           name="phone"
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
-              title="Số điện thoại"
+              title={strings.phone}
               iconUrl={require('../assets/user.png')}
               textValue={value}
               keyboardType="numeric"
@@ -41,7 +56,7 @@ function Login({ navigation }) {
           name="password"
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
-              title="Mật khẩu"
+              title={strings.password}
               iconUrl={require('../assets/lock.png')}
               textValue={value}
               style={styles.passwordInput}
@@ -52,16 +67,16 @@ function Login({ navigation }) {
             />
           )}
         />
-        <LongButton title="Đăng nhập" onPress={handleSubmit(onSubmit)} />
+        <LongButton title={strings.login} onPress={handleSubmit(onSubmit)} />
       </View>
       <TouchableOpacity
         style={styles.btnForgotPass}
         onPress={() => navigation.navigate('ForgotPassword')}
       >
-        <Text style={styles.forgotPassText}>Quên mật khẩu</Text>
+        <Text style={styles.forgotPassText}>{strings.forgotPassword}</Text>
       </TouchableOpacity>
       <View style={styles.lineThrough} />
-      <Text style={styles.anotherLoginText}>Hoặc đăng nhập bằng</Text>
+      <Text style={styles.anotherLoginText}>{strings.anotherLogin}</Text>
       {/* LOGIN WITH ANOTHER WAY */}
       <View style={styles.groupBtnAnotherLogin}>
         <CircleButton iconUrl={require('../assets/fingerprint.png')} style={styles.marginRight} />
@@ -69,9 +84,9 @@ function Login({ navigation }) {
         <CircleButton iconUrl={require('../assets/google.png')} />
       </View>
       <InlineTextButton
-        textContent="Bạn chưa có tài khoản? "
-        btnContent="Đăng ký"
-        restTextContent=" ngay"
+        textContent={strings.notHaveAccount}
+        btnContent={` ${strings.signup}`}
+        restTextContent={` ${strings.now}`}
         style={styles.inlineTextBtn}
         onPress={() => navigation.navigate('Signup')}
       />

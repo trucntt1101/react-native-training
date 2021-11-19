@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomTextInput from '../components/CustomTextInput';
@@ -6,6 +6,9 @@ import LongButton from '../components/LongButton';
 import InlineTextButton from '../components/InlineTextButton';
 import Heading from '../components/Heading';
 import { useForm, Controller } from 'react-hook-form';
+import StringsOfLanguage from '../localization/StringsOfLanguage';
+
+const strings = StringsOfLanguage;
 
 function Signup({ navigation }) {
   const {
@@ -13,11 +16,25 @@ function Signup({ navigation }) {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm({ mode: 'onBlur' });
+  const [reload, setReload] = useState(0);
 
   const onSubmit = (data) => console.log('REGISTER FORM', data);
+  const changeLanguage = (toggleValue) => {
+    if (!toggleValue) StringsOfLanguage.setLanguage('vi');
+    else StringsOfLanguage.setLanguage('en');
+    setReload((previousState) => previousState + 1);
+  };
   return (
-    <LinearGradient colors={['#228ee8', '#1465d0', '#0129ac']} style={styles.container}>
-      <Heading title="Đăng ký tài khoản" style={{ position: 'absolute', top: 50 }} />
+    <LinearGradient
+      colors={['#228ee8', '#1465d0', '#0129ac']}
+      style={styles.container}
+      reload={reload}
+    >
+      <Heading
+        title={strings.createAccount}
+        style={{ position: 'absolute', top: 55 }}
+        changeLang={changeLanguage}
+      />
       {/* LOGIN FORM */}
       <View>
         <Controller
@@ -25,7 +42,7 @@ function Signup({ navigation }) {
           name="name"
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
-              title="Họ và tên"
+              title={strings.name}
               textValue={value}
               onChangeText={(name) => setName(name)}
               style={styles.marginTop}
@@ -39,7 +56,7 @@ function Signup({ navigation }) {
           name="phone"
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
-              title="Điện thoại"
+              title={strings.phone}
               textValue={value}
               keyboardType="numeric"
               style={styles.marginTop}
@@ -53,7 +70,7 @@ function Signup({ navigation }) {
           name="email"
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
-              title="Địa chỉ Email"
+              title={strings.email}
               textValue={value}
               keyboardType="email-address"
               style={styles.marginTop}
@@ -67,7 +84,7 @@ function Signup({ navigation }) {
           name="password"
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
-              title="Mật khẩu"
+              title={strings.password}
               textValue={value}
               style={styles.marginTop}
               onBlur={onBlur}
@@ -82,7 +99,7 @@ function Signup({ navigation }) {
           name="retype-pass"
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
-              title="Nhập lại mật khẩu"
+              title={strings.retypePass}
               textValue={value}
               style={styles.marginTop}
               onBlur={onBlur}
@@ -91,16 +108,13 @@ function Signup({ navigation }) {
             />
           )}
         />
-        <Text style={styles.agreement}>
-          Khi bạn đăng ký tài khoản, bạn đã đồng ý với các điều khoản sử dụng & chính sách dịch vụ
-          của Mr.Thợ.
-        </Text>
-        <LongButton title="Đăng ký tài khoản" onPress={handleSubmit(onSubmit)} />
+        <Text style={styles.agreement}>{strings.agreement}</Text>
+        <LongButton title={strings.signup} onPress={handleSubmit(onSubmit)} />
       </View>
       <InlineTextButton
-        textContent="Bạn đã có tài khoản? "
-        btnContent="Đăng nhập"
-        restTextContent=" ngay"
+        textContent={strings.haveAccount}
+        btnContent={` ${strings.login}`}
+        restTextContent={` ${strings.now}`}
         style={styles.inlineTextBtn}
         onPress={() => navigation.navigate('Login')}
       />

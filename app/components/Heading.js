@@ -2,17 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, LogBox } from 'react-native';
 import { Switch } from 'react-native-switch';
 import PropTypes from 'prop-types';
-function Heading(props) {
-  const { title = '' } = props;
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+import StringsOfLanguage from '../localization/StringsOfLanguage';
+
+function Heading({ title = '', style, changeLang }) {
+  const [isEnabled, setIsEnabled] = useState(true);
+  const toggleSwitch = () => {
+    setIsEnabled((previousState) => !previousState);
+  };
   useEffect(() => {
     LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
   }, []);
+  useEffect(() => {
+    changeLang(isEnabled);
+  }, [isEnabled]);
   return (
-    <View style={[props.style, styles.container]}>
+    <View style={[style, styles.container]}>
       <View style={styles.switch}>
         <Switch
+          // value={switchValue}
           value={isEnabled}
           onValueChange={toggleSwitch}
           disabled={false}
@@ -24,6 +31,7 @@ function Heading(props) {
           circleActiveColor={'#fff'}
           circleInActiveColor={'#fff'}
           switchBorderRadius={30}
+          // {...rest}
         />
       </View>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
@@ -57,6 +65,7 @@ const styles = StyleSheet.create({
 
 Heading.propsType = {
   title: PropTypes.string,
+  switchValue: PropTypes.bool,
 };
 
 export default Heading;

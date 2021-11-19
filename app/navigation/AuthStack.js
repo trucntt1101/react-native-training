@@ -5,6 +5,7 @@ import Signup from '../screens/Signup';
 import ForgotPassword from '../screens/ForgotPassword';
 
 const Stack = createNativeStackNavigator();
+
 function AuthStack() {
   let routeName = 'Login';
   return (

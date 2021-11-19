@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomTextInput from '../components/CustomTextInput';
@@ -7,6 +7,9 @@ import CircleButton from '../components/CircleButton';
 import InlineTextButton from '../components/InlineTextButton';
 import Heading from '../components/Heading';
 import { useForm, Controller } from 'react-hook-form';
+import StringsOfLanguage from '../localization/StringsOfLanguage';
+
+const strings = StringsOfLanguage;
 
 function ForgotPassword({ navigation }) {
   const {
@@ -14,18 +17,35 @@ function ForgotPassword({ navigation }) {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm({ mode: 'onBlur' });
+  const [reload, setReload] = useState(0);
 
   const onSubmit = (data) => console.log('FORGOT PASSWORD FORM', data);
+
+  const changeLanguage = (toggleValue) => {
+    if (!toggleValue) StringsOfLanguage.setLanguage('vi');
+    else StringsOfLanguage.setLanguage('en');
+
+    setReload((previousState) => previousState + 1);
+  };
+
   return (
-    <LinearGradient colors={['#228ee8', '#1465d0', '#0129ac']} style={styles.container}>
-      <Heading title="Quên mật khẩu" style={{ position: 'absolute', top: 50 }} />
+    <LinearGradient
+      colors={['#228ee8', '#1465d0', '#0129ac']}
+      style={styles.container}
+      reload={reload}
+    >
+      <Heading
+        title={strings.forgotPassword}
+        style={{ position: 'absolute', top: 55 }}
+        changeLang={changeLanguage}
+      />
       <View>
         <Controller
           control={control}
           name="phone"
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
-              title="Địa chỉ Email/Số điện thoại"
+              title={`${strings.email}/${strings.phone}`}
               textValue={value}
               keyboardType="email-address"
               onBlur={onBlur}
@@ -34,20 +54,18 @@ function ForgotPassword({ navigation }) {
           )}
         />
         <LongButton
-          title="Lấy lại mật khẩu"
+          title={strings.getPassword}
           style={styles.btnGetPass}
           onPress={handleSubmit(onSubmit)}
         />
       </View>
-      <Text style={styles.guideline}>
-        Vui lòng nhập địa chỉ email hoặc số điện thoại để lấy lại mật khẩu
-      </Text>
+      <Text style={styles.guideline}>{strings.resetPassGuideline}</Text>
       <View style={styles.registerGroup}>
         <View style={styles.lineThrough} />
         <InlineTextButton
-          textContent="Bạn chưa có tài khoản? "
-          btnContent="Đăng ký"
-          restTextContent=" ngay"
+          textContent={strings.notHaveAccount}
+          btnContent={strings.signup}
+          restTextContent={` ${strings.now}`}
           style={styles.inlineTextBtn}
           onPress={() => navigation.navigate('Signup')}
         />
