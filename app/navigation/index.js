@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Routes from './Routes';
 
-function Providers() {
+function Layout({ actions }) {
   return <Routes />;
 }
 
-export default Providers;
+export default Layout;

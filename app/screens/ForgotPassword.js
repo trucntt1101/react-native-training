@@ -8,10 +8,11 @@ import InlineTextButton from '../components/InlineTextButton';
 import Heading from '../components/Heading';
 import { useForm, Controller } from 'react-hook-form';
 import StringsOfLanguage from '../localization/StringsOfLanguage';
+import { connect } from 'react-redux';
 
 const strings = StringsOfLanguage;
 
-function ForgotPassword({ navigation }) {
+function ForgotPassword({ navigation, langBoolean }) {
   const {
     control,
     handleSubmit,
@@ -21,12 +22,12 @@ function ForgotPassword({ navigation }) {
 
   const onSubmit = (data) => console.log('FORGOT PASSWORD FORM', data);
 
-  const changeLanguage = (toggleValue) => {
-    if (!toggleValue) StringsOfLanguage.setLanguage('vi');
+  useEffect(() => {
+    if (!langBoolean) StringsOfLanguage.setLanguage('vi');
     else StringsOfLanguage.setLanguage('en');
 
     setReload((previousState) => previousState + 1);
-  };
+  }, [langBoolean]);
 
   return (
     <LinearGradient
@@ -37,7 +38,7 @@ function ForgotPassword({ navigation }) {
       <Heading
         title={strings.forgotPassword}
         style={{ position: 'absolute', top: 55 }}
-        changeLang={changeLanguage}
+        // changeLang={changeLanguage}
       />
       <View>
         <Controller
@@ -119,4 +120,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ForgotPassword;
+const mapStateToProps = (state) => ({
+  langBoolean: state.language.langBoolean,
+});
+
+export default connect(mapStateToProps)(ForgotPassword);

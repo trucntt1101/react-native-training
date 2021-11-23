@@ -8,32 +8,32 @@ import InlineTextButton from '../components/InlineTextButton';
 import Heading from '../components/Heading';
 import { useForm, Controller } from 'react-hook-form';
 import StringsOfLanguage from '../localization/StringsOfLanguage';
+import { connect } from 'react-redux';
 
 const strings = StringsOfLanguage;
 
-function Login({ navigation }) {
+function Login({ navigation, langBoolean }) {
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm({ mode: 'onBlur' });
-  const [isEnabled, setIsEnabled] = useState(true);
   const [reload, setReload] = useState(0);
 
-  const changeLanguage = (toggleValue) => {
-    if (!toggleValue) StringsOfLanguage.setLanguage('vi');
+  const onSubmit = (data) => console.log('LOGIN FORM', data);
+  useEffect(() => {
+    if (!langBoolean) StringsOfLanguage.setLanguage('vi');
     else StringsOfLanguage.setLanguage('en');
 
     setReload((previousState) => previousState + 1);
-  };
-  const onSubmit = (data) => console.log('LOGIN FORM', data);
+  }, [langBoolean]);
   return (
     <LinearGradient
       colors={['#228ee8', '#1465d0', '#0129ac']}
       style={styles.container}
       reload={reload}
     >
-      <Heading style={{ position: 'absolute', top: 55 }} changeLang={changeLanguage} />
+      <Heading style={{ position: 'absolute', top: 55 }} />
       {/* LOGIN FORM */}
       <View>
         <Controller
@@ -135,4 +135,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+const mapStateToProps = (state) => ({
+  langBoolean: state.language.langBoolean,
+});
+
+export default connect(mapStateToProps)(Login);

@@ -1,7 +1,13 @@
 import React from 'react';
-import Providers from './app/navigation';
+import { Provider } from 'react-redux';
+import Layout from './app/navigation';
+import { store } from './app/store';
 // import ForgotPassword from './app/screens/ForgotPassword';
 
 export default function App() {
-  return <Providers />;
+  return (
+    <Provider store={store}>
+      <Layout />
+    </Provider>
+  );
 }

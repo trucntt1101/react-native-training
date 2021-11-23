@@ -2,25 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, LogBox } from 'react-native';
 import { Switch } from 'react-native-switch';
 import PropTypes from 'prop-types';
-import StringsOfLanguage from '../localization/StringsOfLanguage';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as Actions from '../actions';
+import { getObjectData, storeData } from '../utils/LocalStorage';
 
-function Heading({ title = '', style, changeLang }) {
-  const [isEnabled, setIsEnabled] = useState(true);
+function Heading({ title = '', style, langBoolean, actions }) {
+  const [isEnabled, setIsEnabled] = useState(langBoolean);
   const toggleSwitch = () => {
-    setIsEnabled((previousState) => !previousState);
+    setIsEnabled((isEnabled) => !isEnabled);
+    storeData('lang_en', JSON.stringify(!isEnabled));
   };
   useEffect(() => {
     LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+    // get value from local storage
+    getObjectData('lang_en').then((lang) => {
+      setIsEnabled(lang);
+    });
   }, []);
   useEffect(() => {
-    changeLang(isEnabled);
+    actions.changeLanguage(isEnabled);
   }, [isEnabled]);
   return (
     <View style={[style, styles.container]}>
       <View style={styles.switch}>
         <Switch
-          // value={switchValue}
-          value={isEnabled}
+          value={langBoolean}
           onValueChange={toggleSwitch}
           disabled={false}
           activeText={'EN'}
@@ -68,4 +75,12 @@ Heading.propsType = {
   switchValue: PropTypes.bool,
 };
 
-export default Heading;
+const mapStateToProps = (state) => ({
+  langBoolean: state.language.langBoolean,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators(Actions, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Heading);

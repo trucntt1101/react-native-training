@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomTextInput from '../components/CustomTextInput';
@@ -7,10 +7,11 @@ import InlineTextButton from '../components/InlineTextButton';
 import Heading from '../components/Heading';
 import { useForm, Controller } from 'react-hook-form';
 import StringsOfLanguage from '../localization/StringsOfLanguage';
+import { connect } from 'react-redux';
 
 const strings = StringsOfLanguage;
 
-function Signup({ navigation }) {
+function Signup({ navigation, langBoolean }) {
   const {
     control,
     handleSubmit,
@@ -19,11 +20,13 @@ function Signup({ navigation }) {
   const [reload, setReload] = useState(0);
 
   const onSubmit = (data) => console.log('REGISTER FORM', data);
-  const changeLanguage = (toggleValue) => {
-    if (!toggleValue) StringsOfLanguage.setLanguage('vi');
+
+  useEffect(() => {
+    if (!langBoolean) StringsOfLanguage.setLanguage('vi');
     else StringsOfLanguage.setLanguage('en');
+
     setReload((previousState) => previousState + 1);
-  };
+  }, [langBoolean]);
   return (
     <LinearGradient
       colors={['#228ee8', '#1465d0', '#0129ac']}
@@ -33,7 +36,7 @@ function Signup({ navigation }) {
       <Heading
         title={strings.createAccount}
         style={{ position: 'absolute', top: 55 }}
-        changeLang={changeLanguage}
+        // changeLang={changeLanguage}
       />
       {/* LOGIN FORM */}
       <View>
@@ -142,4 +145,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Signup;
+const mapStateToProps = (state) => ({
+  langBoolean: state.language.langBoolean,
+});
+
+export default connect(mapStateToProps)(Signup);
