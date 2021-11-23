@@ -1,19 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from 'react-redux';
+import Layout from './app/navigation';
+import { store } from './app/store';
+// import ForgotPassword from './app/screens/ForgotPassword';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Hello React Native</Text>
-    </View>
+    <Provider store={store}>
+      <Layout />
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
