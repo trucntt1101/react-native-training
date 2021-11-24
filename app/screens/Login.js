@@ -9,18 +9,47 @@ import Heading from '../components/Heading';
 import { useForm, Controller } from 'react-hook-form';
 import StringsOfLanguage from '../localization/StringsOfLanguage';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as Actions from '../actions';
+import { getObjectData } from '../utils/LocalStorage';
+import _ from 'lodash';
 
 const strings = StringsOfLanguage;
 
-function Login({ navigation, langBoolean }) {
+const formDefault = {
+  email: '',
+  name: '',
+  password: '',
+  phone: '',
+  retypePass: '',
+};
+
+function Login({ navigation, langBoolean, actions }) {
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
+    reset,
   } = useForm({ mode: 'onBlur' });
   const [reload, setReload] = useState(0);
 
-  const onSubmit = (data) => console.log('LOGIN FORM', data);
+  const onSubmit = (data) => {
+    reset(formDefault);
+    console.log('LOGIN FORM', data);
+    getObjectData('list_user').then((users) => {
+      console.log('users ', users);
+      const index = _.findIndex(users, (user) => {
+        return user.phone === data.phone && user.password === data.password;
+      });
+      if (index !== -1) {
+        // user login is true
+        // get user item -> store to redux
+        const currentUser = users[index];
+        console.log('current user ', currentUser);
+        actions.changeLoginStatusToTrue(currentUser);
+      }
+    });
+  };
   useEffect(() => {
     if (!langBoolean) StringsOfLanguage.setLanguage('vi');
     else StringsOfLanguage.setLanguage('en');
@@ -139,4 +168,8 @@ const mapStateToProps = (state) => ({
   langBoolean: state.language.langBoolean,
 });
 
-export default connect(mapStateToProps)(Login);
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators(Actions, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomTextInput from '../components/CustomTextInput';
 import LongButton from '../components/LongButton';
@@ -8,19 +8,54 @@ import Heading from '../components/Heading';
 import { useForm, Controller } from 'react-hook-form';
 import StringsOfLanguage from '../localization/StringsOfLanguage';
 import { connect } from 'react-redux';
+import { getObjectData, storeData } from '../utils/LocalStorage';
+import _ from 'lodash';
 
 const strings = StringsOfLanguage;
+
+const formDefault = {
+  email: '',
+  name: '',
+  password: '',
+  phone: '',
+  retypePass: '',
+};
 
 function Signup({ navigation, langBoolean }) {
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
+    reset,
   } = useForm({ mode: 'onBlur' });
   const [reload, setReload] = useState(0);
 
-  const onSubmit = (data) => console.log('REGISTER FORM', data);
-
+  const onSubmit = (data) => {
+    reset(formDefault);
+    console.log('REGISTER FORM', data);
+    // get list data from asyn storage
+    getObjectData('list_user').then((users) => {
+      if (_.isNull(users)) {
+        // get list_user in the first time
+        let newUsers = [];
+        const user = {
+          ...data,
+        };
+        newUsers.push(user);
+        storeData('list_user', JSON.stringify(newUsers)).then(() => {
+          console.log('successed!');
+        });
+      } else {
+        let newUsers = [...users];
+        newUsers.push({
+          ...data,
+        });
+        storeData('list_user', JSON.stringify(newUsers)).then(() => {
+          console.log('successed!');
+        });
+      }
+    });
+  };
   useEffect(() => {
     if (!langBoolean) StringsOfLanguage.setLanguage('vi');
     else StringsOfLanguage.setLanguage('en');
@@ -33,11 +68,7 @@ function Signup({ navigation, langBoolean }) {
       style={styles.container}
       reload={reload}
     >
-      <Heading
-        title={strings.createAccount}
-        style={{ position: 'absolute', top: 55 }}
-        // changeLang={changeLanguage}
-      />
+      <Heading title={strings.createAccount} style={{ position: 'absolute', top: 55 }} />
       {/* LOGIN FORM */}
       <View>
         <Controller
@@ -99,7 +130,8 @@ function Signup({ navigation, langBoolean }) {
         />
         <Controller
           control={control}
-          name="retype-pass"
+          name="retypePass"
+          rules={{ required: true }}
           render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
               title={strings.retypePass}
@@ -111,6 +143,7 @@ function Signup({ navigation, langBoolean }) {
             />
           )}
         />
+        <Text>{errors.retypePass?.message}</Text>
         <Text style={styles.agreement}>{strings.agreement}</Text>
         <LongButton title={strings.signup} onPress={handleSubmit(onSubmit)} />
       </View>

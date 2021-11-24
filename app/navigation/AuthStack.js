@@ -15,15 +15,16 @@ function AuthStack() {
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPassword}
-        options={({ navigation }) => ({
-          title: '',
-          headerTransparent: true,
-          headerStyle: {
-            backgroundColor: 'transparent',
-          },
-          headerBackTitleVisible: false,
-          headerTintColor: '#0049bf',
-        })}
+        options={{ header: () => null }}
+        // options={({ navigation }) => ({
+        //   title: '',
+        //   headerTransparent: true,
+        //   headerStyle: {
+        //     backgroundColor: 'transparent',
+        //   },
+        //   headerBackTitleVisible: false,
+        //   headerTintColor: '#0049bf',
+        // })}
       />
     </Stack.Navigator>
   );

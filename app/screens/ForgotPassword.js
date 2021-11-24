@@ -38,7 +38,8 @@ function ForgotPassword({ navigation, langBoolean }) {
       <Heading
         title={strings.forgotPassword}
         style={{ position: 'absolute', top: 55 }}
-        // changeLang={changeLanguage}
+        navigation={navigation}
+        back
       />
       <View>
         <Controller

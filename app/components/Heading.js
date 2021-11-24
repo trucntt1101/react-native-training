@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Text, StyleSheet, LogBox } from 'react-native';
+import { View, Image, Text, StyleSheet, LogBox, Button, TouchableOpacity } from 'react-native';
 import { Switch } from 'react-native-switch';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions';
 import { getObjectData, storeData } from '../utils/LocalStorage';
+import { windowWidth } from '../utils/Dimensions';
 
-function Heading({ title = '', style, langBoolean, actions }) {
+function Heading({ title = '', style, langBoolean, actions, navigation, back }) {
   const [isEnabled, setIsEnabled] = useState(langBoolean);
   const toggleSwitch = () => {
     setIsEnabled((isEnabled) => !isEnabled);
     storeData('lang_en', JSON.stringify(!isEnabled));
+  };
+  const onClickNavigation = () => {
+    navigation.goBack();
   };
   useEffect(() => {
     LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
@@ -25,7 +29,13 @@ function Heading({ title = '', style, langBoolean, actions }) {
   }, [isEnabled]);
   return (
     <View style={[style, styles.container]}>
-      <View style={styles.switch}>
+      <View style={back ? styles.switchHaveBack : styles.switch}>
+        {back ? (
+          <TouchableOpacity onPress={onClickNavigation} style={styles.backBtn}>
+            <Image source={require('../assets/back.png')} style={styles.backIcon} />
+          </TouchableOpacity>
+        ) : null}
+
         <Switch
           value={langBoolean}
           onValueChange={toggleSwitch}
@@ -52,9 +62,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+  switchHaveBack: {
+    width: windowWidth - 35,
+    marginRight: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   switch: {
     position: 'absolute',
-    right: 15,
+    right: 25,
   },
   logo: {
     height: 90,
@@ -68,11 +85,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  backBtn: {
+    // left: 10,
+  },
+  backIcon: {
+    width: 20,
+    height: 20,
+  },
 });
 
 Heading.propsType = {
   title: PropTypes.string,
   switchValue: PropTypes.bool,
+  navigation: PropTypes.any,
+  // back navigation in Forgot password
+  back: PropTypes.bool,
 };
 
 const mapStateToProps = (state) => ({
